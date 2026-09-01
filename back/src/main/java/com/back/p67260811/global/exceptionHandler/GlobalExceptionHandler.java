@@ -2,7 +2,6 @@ package com.back.p67260811.global.exceptionHandler;
 
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +16,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public RsData<Void> noSuchElementException(){
-        return new RsData<Void>(
+        return new RsData<>(
                 "404-1",
                 "존재하지 않는 데이터입니다."
         );
@@ -35,22 +34,14 @@ public class GlobalExceptionHandler {
                 .sorted(Comparator.comparing(String::toString))
                 .collect(Collectors.joining("\n"));
 
-        return new RsData<Void>(
+        return new RsData<>(
                 "400-1",
                 message
         );
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public RsData<Void> handleException(HttpMessageNotReadableException e) {
-        return new RsData<Void>(
-                "400-2",
-                "잘못된 형식의 요청 데이터입니다."
-        );
-    }
-
     @ExceptionHandler(ServiceException.class)
-    public RsData<Void> handleServiceException(ServiceException e) {
-        return new RsData<Void>(e.getResultCode(), e.getMsg());
+    public RsData<Void> handleException(ServiceException e) {
+        return new RsData<>(e.getResultCode(), e.getMsg());
     }
 }
