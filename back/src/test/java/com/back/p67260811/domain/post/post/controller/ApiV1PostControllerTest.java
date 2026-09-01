@@ -126,7 +126,7 @@ public class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.msg").value("%d번 게시물이 수정되었습니다.".formatted(targetId)));
 
         // 선택적 검증
-        Post post = postRepository.findById(targetId).get(); // 순수하게 DB 조회
+        Post post = postRepository.findById(targetId).orElseThrow(); // 순수하게 DB 조회
 
         assertThat(post.getTitle()).isEqualTo(title);
         assertThat(post.getContent()).isEqualTo(content);

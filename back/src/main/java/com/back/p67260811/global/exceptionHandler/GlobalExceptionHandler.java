@@ -1,22 +1,21 @@
 package com.back.p67260811.global.exceptionHandler;
 
 import com.back.p67260811.global.dto.RsData;
+import com.back.p67260811.global.exception.ServiceException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseBody
     public RsData<Void> noSuchElementException(){
         return new RsData<Void>(
                 "404-1",
@@ -25,7 +24,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
     public RsData<Void> methodArgumentNotValidException(MethodArgumentNotValidException e){
 
         String message = e.getBindingResult()
@@ -44,7 +42,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    @ResponseBody
     public RsData<Void> handleException(HttpMessageNotReadableException e) {
         return new RsData<Void>(
                 "400-2",
@@ -52,7 +49,8 @@ public class GlobalExceptionHandler {
         );
     }
 
-
-
-
+    @ExceptionHandler(ServiceException.class)
+    public RsData<Void> handleServiceException(ServiceException e) {
+        return new RsData<Void>(e.getResultCode(), e.getMsg());
+    }
 }
