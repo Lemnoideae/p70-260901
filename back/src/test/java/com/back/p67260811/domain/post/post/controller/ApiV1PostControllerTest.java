@@ -66,6 +66,7 @@ public class ApiV1PostControllerTest {
     void t2() throws Exception {
         String title = "제목입니다";
         String content = "내용입니다";
+        String user1ApiKey = "5bd865eb-bea4-4904-9b5b-954281d777f5";
 
         ResultActions resultActions = mvc
                 .perform(
