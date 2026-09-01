@@ -56,8 +56,8 @@ public class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$[0].modifyDate").exists())
                 .andExpect(jsonPath("$[0].title").value("제목3"))
                 .andExpect(jsonPath("$[0].content").value("내용3"))
-                .andExpect(jsonPath("$[0].nickname").value("user2"))
-                .andExpect(jsonPath("$[0].username").value("유저2"))
+                .andExpect(jsonPath("$[0].nickname").value("유저2"))
+                .andExpect(jsonPath("$[0].username").value("user2"))
         ;
     }
 
@@ -91,8 +91,8 @@ public class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.data.modifyDate").exists())
                 .andExpect(jsonPath("$.data.title").value(title))
                 .andExpect(jsonPath("$.data.content").value(content))
-                .andExpect(jsonPath("$.data.nickname").value("user1"))
-                .andExpect(jsonPath("$.data.username").value("유저1"));
+                .andExpect(jsonPath("$.data.nickname").value("유저1"))
+                .andExpect(jsonPath("$.data.username").value("user1"));
 
 
     }
@@ -155,8 +155,8 @@ public class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.modifyDate").exists())
                 .andExpect(jsonPath("$.title").value("제목1"))
                 .andExpect(jsonPath("$.content").value("내용1"))
-                .andExpect(jsonPath("$.nickname").value("user1"))
-                .andExpect(jsonPath("$.username").value("유저1"))
+                .andExpect(jsonPath("$.nickname").value("유저1"))
+                .andExpect(jsonPath("$.username").value("user1"))
         ;
 
     }
