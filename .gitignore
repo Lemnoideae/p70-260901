@@ -1,2 +1,4 @@
 .idea/
 .idea
+.vscode/
+db_dev.mv.db
