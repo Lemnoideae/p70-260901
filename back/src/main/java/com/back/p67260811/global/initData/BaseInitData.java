@@ -49,8 +49,8 @@ public class BaseInitData {
             return;
         }
 
-        Member m1 = memberService.findByUsername("user1").get();
-        Member m2 = memberService.findByUsername("user2").get();
+        Member m1 = memberService.findByUsername("user1").orElseThrow();
+        Member m2 = memberService.findByUsername("user2").orElseThrow();
 
         Post post1 = postService.write(m1, "제목1", "내용1");
         Post post2 = postService.write(m1, "제목2", "내용2");

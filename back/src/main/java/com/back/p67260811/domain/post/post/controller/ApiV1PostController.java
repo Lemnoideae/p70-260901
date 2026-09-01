@@ -28,11 +28,9 @@ public class ApiV1PostController {
     public List<PostDto> list() {
         List<Post> postList = postService.findAll();
 
-        List<PostDto> postDtoList = postList.stream()
-                .map(PostDto::new)
+        return postList.stream()
+                .map(PostDto::from)
                 .toList();
-
-        return postDtoList;
     }
 
     @GetMapping("/{id}")
@@ -40,10 +38,10 @@ public class ApiV1PostController {
             @PathVariable int id
     ) {
 
-        Post post = postService.findById(id).get();
+        Post post = postService.findById(id).orElseThrow();
 
 
-        return new PostDto(post);
+        return PostDto.from(post);
     }
 
 
@@ -63,12 +61,12 @@ public class ApiV1PostController {
     public RsData<PostDto> write(
             @Valid @RequestBody PostWriteReqBody reqBody
     ) {
-        Member actor = memberService.findByUsername("user1").get();
+        Member actor = memberService.findByUsername("user1").orElseThrow();
         Post post = postService.write(actor, reqBody.title, reqBody.content);
         return new RsData<>(
                 "201-1",
                 "%d번 글이 성공적으로 등록되었습니다".formatted(post.getId()),
-                new PostDto(post)
+                PostDto.from(post)
         );
     }
 
@@ -89,7 +87,7 @@ public class ApiV1PostController {
             @PathVariable int id,
             @Valid @RequestBody PostModifyReqBody reqBody
     ) {
-        Post post = postService.findById(id).get();
+        Post post = postService.findById(id).orElseThrow();
         postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData<>(
