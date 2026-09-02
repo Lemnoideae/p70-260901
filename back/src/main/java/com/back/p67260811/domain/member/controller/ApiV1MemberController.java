@@ -55,7 +55,7 @@ public class ApiV1MemberController {
 
         return new RsData(
                 "200-1",
-                "%s님 환영합니다.".formatted(reqBody.username()),
+                "%s님 환영합니다.".formatted(member.getNickname()),
                 new LoginResBody(
                         MemberDto.from(member),
                         member.getApiKey()
