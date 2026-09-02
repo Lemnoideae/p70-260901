@@ -3,6 +3,7 @@ package com.back.p67260811.domain.post.post.controller;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.service.MemberService;
 import com.back.p67260811.domain.post.post.dto.PostDto;
+import com.back.p67260811.domain.post.post.dto.write.PostWriteReqBody;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
@@ -45,18 +46,6 @@ public class ApiV1PostController {
         return PostDto.from(post);
     }
 
-
-    record PostWriteReqBody(
-            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "제목을 입력해주세요.")
-            String title,
-
-            @Size(min = 2, max = 10, message = "내용은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "내용을 입력해주세요.")
-            String content
-    ) {
-    }
-
     @PostMapping
     @Transactional
     public RsData<PostDto> write(
@@ -67,7 +56,7 @@ public class ApiV1PostController {
 
         Member actor = memberService.findByApiKey(authorization).orElseThrow(() ->
                 new ServiceException("401-1", "API Key가 유효하지 않습니다."));
-        Post post = postService.write(actor, reqBody.title, reqBody.content);
+        Post post = postService.write(actor, reqBody.title(), reqBody.content());
         return new RsData<>(
                 "201-1",
                 "%d번 글이 성공적으로 등록되었습니다".formatted(post.getId()),

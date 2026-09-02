@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public RsData<Void> methodArgumentNotValidException(MethodArgumentNotValidException e){
+    public ResponseEntity<RsData<Void>> methodArgumentNotValidException(MethodArgumentNotValidException e){
 
         String message = e.getBindingResult()
                 .getAllErrors()
@@ -35,10 +35,8 @@ public class GlobalExceptionHandler {
                 .sorted(Comparator.comparing(String::toString))
                 .collect(Collectors.joining("\n"));
 
-        return new RsData<>(
-                "400-1",
-                message
-        );
+        return ResponseEntity.status(e.getStatusCode())
+                .body(new RsData<>("400-1", message));
     }
 
     @ExceptionHandler(ServiceException.class)

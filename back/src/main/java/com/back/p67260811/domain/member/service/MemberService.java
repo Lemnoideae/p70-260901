@@ -21,8 +21,13 @@ public class MemberService {
     public Member join(String username, String password, String nickname) {
         findByUsername(username).ifPresent(_ -> {
             throw new ServiceException("409-1", "이미 사용 중인 아이디입니다.");});
-        Member member = new Member(username, password, nickname);
-        return memberRepository.save(member);
+        return memberRepository.save(new Member(username, password, nickname));
+    }
+
+    public Member join(String username, String password, String nickname, String apiKey) {
+        findByUsername(username).ifPresent(_ -> {
+            throw new ServiceException("409-1", "이미 사용 중인 아이디입니다.");});
+        return memberRepository.save(new Member(username, password, nickname, apiKey));
     }
 
     public Optional<Member> findByUsername(String user) {
