@@ -79,9 +79,19 @@ public class ApiV1PostController {
     @Transactional
     public RsData<Void> modify(
             @PathVariable int id,
-            @Valid @RequestBody PostModifyReqBody reqBody
+            @Valid @RequestBody PostModifyReqBody reqBody,
+            @RequestHeader("Authorization") String apiKey
     ) {
+        String authorization = apiKey.substring(7);
+        Member actor = memberService.findByApiKey(authorization).orElseThrow(() ->
+                new ServiceException("401-1", "API Key가 유효하지 않습니다."));
+
         Post post = postService.findById(id).orElseThrow();
+
+        if (!actor.equals(post.getAuthor())) {
+            throw new ServiceException("403-1", "수정 권한이 없습니다.");
+        }
+
         postService.modify(post, reqBody.title, reqBody.content);
 
         return new RsData<>(
@@ -92,8 +102,17 @@ public class ApiV1PostController {
 
     @DeleteMapping("/{id}")
     public RsData<Void> delete(
-            @PathVariable int id
+            @PathVariable int id,
+            @RequestHeader("Authorization") @NotBlank String apiKey
     ) {
+        String authorization = apiKey.substring(7);
+        Member actor = memberService.findByApiKey(authorization).orElseThrow(() ->
+                new ServiceException("400-1", "API 키가 올바르지 않습니다."));
+
+        if (!actor.equals(postService.findById(id).orElseThrow().getAuthor())) {
+            throw new ServiceException("403-1", "삭제 권한이 없습니다.");
+        }
+
         postService.delete(id);
 
         return new RsData<>(

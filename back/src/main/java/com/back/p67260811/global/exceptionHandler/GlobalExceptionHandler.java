@@ -39,6 +39,12 @@ public class GlobalExceptionHandler {
                 .body(new RsData<>("400-1", message));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<RsData<Void>> handleIllegalArgumentException(IllegalArgumentException e){
+        return ResponseEntity.status(400).body(
+                new RsData<>("400-2", "잘못된 형식의 요청 데이터입니다."));
+    }
+
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<RsData<Void>> handleException(ServiceException e) {
         return ResponseEntity.status(e.getStatusCode()).body(
