@@ -3,14 +3,13 @@ package com.back.p67260811.domain.post.post.controller;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.service.MemberService;
 import com.back.p67260811.domain.post.post.dto.PostDto;
+import com.back.p67260811.domain.post.post.dto.modify.PostModifyReqBody;
 import com.back.p67260811.domain.post.post.dto.write.PostWriteReqBody;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.rq.Rq;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ public class ApiV1PostController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PostDto> list() {
         List<Post> postList = postService.findAll();
-
         return postList.stream()
                 .map(PostDto::from)
                 .toList();
@@ -54,26 +52,13 @@ public class ApiV1PostController {
         );
     }
 
-    record PostModifyReqBody(
-            @Size(min = 2, max = 10, message = "제목은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "제목을 입력해주세요.")
-            String title,
-            @Size(min = 2, max = 10, message = "내용은 2글자 이상 10글자 이하로 작성해주세요.")
-            @NotBlank(message = "내용을 입력해주세요.")
-            String content
-    ) {
-    }
-
     @PatchMapping("/{id}")
     @Transactional
-    public RsData<Void> modify(
-            @PathVariable int id,
-            @Valid @RequestBody PostModifyReqBody reqBody
-    ) {
+    public RsData<Void> modify(@PathVariable int id,
+                               @Valid @RequestBody PostModifyReqBody reqBody) {
         Member actor = rq.getActor();
         Post post = postService.findById(id).orElseThrow();
-
-        postService.modify(post, reqBody.title, reqBody.content);
+        postService.modify(post, reqBody.title(), reqBody.content());
 
         return new RsData<>(
                 "200-1",
@@ -82,9 +67,7 @@ public class ApiV1PostController {
     }
 
     @DeleteMapping("/{id}")
-    public RsData<Void> delete(
-            @PathVariable int id
-    ) {
+    public RsData<Void> delete(@PathVariable int id) {
         Member actor = rq.getActor();
         postService.delete(id);
 

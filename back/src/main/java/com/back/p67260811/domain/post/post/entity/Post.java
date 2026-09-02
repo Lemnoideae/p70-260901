@@ -26,8 +26,10 @@ public class Post extends BaseEntity {
         this.author = author;
     }
 
-
-    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "post",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true)
     List<PostComment> comments = new ArrayList<>();
 
     public PostComment findCommentById(int id) {
@@ -62,8 +64,6 @@ public class Post extends BaseEntity {
     }
 
     public void update(String title, String content) {
-
-        // 비즈니스 규칙
         this.title = title;
         this.content = content;
     }

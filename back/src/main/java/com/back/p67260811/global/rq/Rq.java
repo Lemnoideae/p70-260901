@@ -27,9 +27,8 @@ public class Rq {
             throw new ServiceException("401-2", "헤더의 인증 정보 형식이 올바르지 않습니다.");
         }
 
-        Member actor = memberService.findByApiKey(authorization.substring(7))
+        return memberService.findByApiKey(authorization.substring(7))
                 .orElseThrow(() -> new ServiceException(
                         "401-3", "API 키가 올바르지 않습니다."));
-        return actor;
     }
 }

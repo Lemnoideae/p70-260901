@@ -24,9 +24,7 @@ public class ApiV1MemberController {
     private final MemberService memberService;
 
     @PostMapping("/join")
-    public RsData<MemberDto> join(
-            @RequestBody @Valid JoinReqBody reqBody
-    ) {
+    public RsData<MemberDto> join(@RequestBody @Valid JoinReqBody reqBody) {
         Member member = memberService.join(
                 reqBody.username(),
                 reqBody.password(),
@@ -41,25 +39,18 @@ public class ApiV1MemberController {
     }
 
     @PostMapping("/login")
-    public RsData<MemberDto> login(
-            @RequestBody @Valid LoginReqBody reqBody
-    ) {
+    public RsData<MemberDto> login(@RequestBody @Valid LoginReqBody reqBody) {
 
-        Member member = memberService.findByUsername(reqBody.username()).orElseThrow(
-                () -> new ServiceException("401-1", "존재하지 않는 아이디입니다.")
-        );
+        Member member = memberService.findByUsername(
+                reqBody.username()).orElseThrow(() ->
+                new ServiceException("401-1", "존재하지 않는 아이디입니다."));
 
         if (!member.getPassword().equals(reqBody.password())) {
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
         }
 
-        return new RsData(
-                "200-1",
+        return new RsData("200-1",
                 "%s님 환영합니다.".formatted(member.getNickname()),
-                new LoginResBody(
-                        MemberDto.from(member),
-                        member.getApiKey()
-                )
-        );
+                new LoginResBody(MemberDto.from(member), member.getApiKey()));
     }
 }

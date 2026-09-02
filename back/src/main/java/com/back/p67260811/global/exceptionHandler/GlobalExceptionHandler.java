@@ -17,21 +17,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     public RsData<Void> noSuchElementException(){
-        return new RsData<>(
-                "404-1",
-                "존재하지 않는 데이터입니다."
-        );
+        return new RsData<>("404-1",
+                "존재하지 않는 데이터입니다.");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<RsData<Void>> methodArgumentNotValidException(MethodArgumentNotValidException e){
+    public ResponseEntity<RsData<Void>> methodArgumentNotValidException(
+            MethodArgumentNotValidException e){
 
         String message = e.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .filter(error -> error instanceof FieldError)
                 .map(error -> (FieldError) error)
-                .map(error -> error.getField() + "-" + error.getCode() + "-" + error.getDefaultMessage())
+                .map(error ->
+                        error.getField() + "-" +
+                        error.getCode() + "-" +
+                        error.getDefaultMessage())
                 .sorted(Comparator.comparing(String::toString))
                 .collect(Collectors.joining("\n"));
 
@@ -40,7 +42,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<RsData<Void>> handleIllegalArgumentException(IllegalArgumentException e){
+    public ResponseEntity<RsData<Void>> handleIllegalArgumentException(
+            IllegalArgumentException e){
         return ResponseEntity.status(400).body(
                 new RsData<>("400-2", "잘못된 형식의 요청 데이터입니다."));
     }
