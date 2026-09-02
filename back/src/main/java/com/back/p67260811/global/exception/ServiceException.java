@@ -1,6 +1,7 @@
 package com.back.p67260811.global.exception;
 
 import com.back.p67260811.global.dto.RsData;
+import org.springframework.http.HttpStatusCode;
 
 public class ServiceException extends RuntimeException {
     private final RsData rsData;
@@ -11,6 +12,10 @@ public class ServiceException extends RuntimeException {
 
     public String getResultCode() {
         return rsData.getResultCode();
+    }
+
+    public HttpStatusCode getStatusCode() {
+        return HttpStatusCode.valueOf(rsData.getStatusCode());
     }
 
     public String getMsg() {

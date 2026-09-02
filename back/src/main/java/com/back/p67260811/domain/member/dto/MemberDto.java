@@ -17,7 +17,7 @@ public record MemberDto(
                 .id(member.getId())
                 .createDate(member.getCreateDate())
                 .modifyDate(member.getModifyDate())
-                .name(member.getUsername())
+                .name(member.getNickname())
                 .build();
     }
 }

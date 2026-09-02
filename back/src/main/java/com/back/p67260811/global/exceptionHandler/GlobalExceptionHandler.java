@@ -2,6 +2,7 @@ package com.back.p67260811.global.exceptionHandler;
 
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,7 +42,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ServiceException.class)
-    public RsData<Void> handleException(ServiceException e) {
-        return new RsData<>(e.getResultCode(), e.getMsg());
+    public ResponseEntity<RsData<Void>> handleException(ServiceException e) {
+        return ResponseEntity.status(e.getStatusCode()).body(
+                new RsData<>(e.getResultCode(), e.getMsg()));
     }
 }

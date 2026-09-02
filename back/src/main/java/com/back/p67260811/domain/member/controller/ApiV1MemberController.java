@@ -1,13 +1,15 @@
 package com.back.p67260811.domain.member.controller;
 
 import com.back.p67260811.domain.member.dto.MemberDto;
+import com.back.p67260811.domain.member.dto.join.JoinReqBody;
+import com.back.p67260811.domain.member.dto.join.JoinResBody;
+import com.back.p67260811.domain.member.dto.login.LoginReqBody;
+import com.back.p67260811.domain.member.dto.login.LoginResBody;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.service.MemberService;
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,40 +23,43 @@ public class ApiV1MemberController {
 
     private final MemberService memberService;
 
-    record JoinReqBody(
-            @NotBlank
-            @Size(min = 2, max = 30)
-            String username,
-
-            @NotBlank
-            @Size(min = 2, max = 30)
-            String password,
-
-            @NotBlank
-            @Size(min = 2, max = 30)
-            String nickname
-    ) {
-    }
-
-    record JoinResBody(
-            MemberDto memberDto
-    ) {
-    }
-
-    @PostMapping()
+    @PostMapping("/join")
     public RsData<MemberDto> join(
             @RequestBody @Valid JoinReqBody reqBody
     ) {
-
-        memberService.findByUsername(reqBody.username).ifPresent(_ -> {
-            throw new ServiceException("409-1", "이미 존재하는 회원입니다.");});
-
-        Member member = memberService.join(reqBody.username, reqBody.password, reqBody.nickname);
+        Member member = memberService.join(
+                reqBody.username(),
+                reqBody.password(),
+                reqBody.nickname());
 
         return new RsData(
                 "201-1",
-                "회원가입이 완료되었습니다. %s님 환영합니다.".formatted(reqBody.nickname),
+                "회원가입이 완료되었습니다. %s님 환영합니다."
+                        .formatted(reqBody.nickname()),
                 new JoinResBody(MemberDto.from(member))
+        );
+    }
+
+    @PostMapping("/login")
+    public RsData<MemberDto> login(
+            @RequestBody @Valid LoginReqBody reqBody
+    ) {
+
+        Member member = memberService.findByUsername(reqBody.username()).orElseThrow(
+                () -> new ServiceException("401-1", "존재하지 않는 아이디입니다.")
+        );
+
+        if (!member.getPassword().equals(reqBody.password())) {
+            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+        }
+
+        return new RsData(
+                "200-1",
+                "%s님 환영합니다.".formatted(reqBody.username()),
+                new LoginResBody(
+                        MemberDto.from(member),
+                        member.getApiKey()
+                )
         );
     }
 }
