@@ -5,16 +5,15 @@ import com.back.p67260811.domain.member.dto.join.JoinReqBody;
 import com.back.p67260811.domain.member.dto.join.JoinResBody;
 import com.back.p67260811.domain.member.dto.login.LoginReqBody;
 import com.back.p67260811.domain.member.dto.login.LoginResBody;
+import com.back.p67260811.domain.member.dto.me.MeResBody;
 import com.back.p67260811.domain.member.entity.Member;
 import com.back.p67260811.domain.member.service.MemberService;
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.exception.ServiceException;
+import com.back.p67260811.global.rq.Rq;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ApiV1MemberController {
 
     private final MemberService memberService;
+    private final Rq rq;
 
     @PostMapping("/join")
     public RsData<MemberDto> join(@RequestBody @Valid JoinReqBody reqBody) {
@@ -52,5 +52,13 @@ public class ApiV1MemberController {
         return new RsData("200-1",
                 "%s님 환영합니다.".formatted(member.getNickname()),
                 new LoginResBody(MemberDto.from(member), member.getApiKey()));
+    }
+
+
+    @GetMapping("/me")
+    public RsData<MemberDto> me() {
+        Member actor = rq.getActor();
+        return new RsData("200-1", "OK",
+                new MeResBody(MemberDto.from(actor)));
     }
 }
