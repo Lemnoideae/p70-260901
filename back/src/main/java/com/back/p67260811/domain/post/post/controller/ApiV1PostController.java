@@ -9,6 +9,7 @@ import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
 import com.back.p67260811.global.rq.Rq;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
+@SecurityRequirement(name = "bearerAuth")
 public class ApiV1PostController {
 
     private final PostService postService;

@@ -60,8 +60,8 @@ public class Rq {
         response.addCookie(cookie);
     }
 
-    public void deleteCookie(String apiKey) {
-        Cookie cookie = new Cookie(apiKey, "");
+    public void deleteCookie(String name) {
+        Cookie cookie = new Cookie(name, "");
         cookie.setHttpOnly(true);
         cookie.setDomain("localhost");
         cookie.setPath("/");
