@@ -58,6 +58,7 @@ public class ApiV1PostController {
                                @Valid @RequestBody PostModifyReqBody reqBody) {
         Member actor = rq.getActor();
         Post post = postService.findById(id).orElseThrow();
+        post.checkActorModify(actor);
         postService.modify(post, reqBody.title(), reqBody.content());
 
         return new RsData<>(
@@ -69,6 +70,7 @@ public class ApiV1PostController {
     @DeleteMapping("/{id}")
     public RsData<Void> delete(@PathVariable int id) {
         Member actor = rq.getActor();
+        postService.findById(id).orElseThrow().checkActorModify(actor);
         postService.delete(id);
 
         return new RsData<>(
