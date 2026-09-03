@@ -58,11 +58,16 @@ public class ApiV1MemberController {
                 new LoginResBody(MemberDto.from(actor), actor.getApiKey()));
     }
 
-
     @GetMapping("/me")
     public RsData<MemberDto> me() {
         Member actor = rq.getActor();
         return new RsData("200-1", "OK",
                 new MeResBody(MemberDto.from(actor)));
+    }
+
+    @DeleteMapping("/logout")
+    public RsData<Void> logout() {
+        rq.deleteCookie("apiKey");
+        return new RsData<>("200-1", "로그아웃 되었습니다.");
     }
 }

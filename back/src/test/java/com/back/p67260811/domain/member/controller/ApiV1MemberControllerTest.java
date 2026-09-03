@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -147,4 +147,51 @@ public class ApiV1MemberControllerTest {
         );
     }
 
+    @DisplayName("로그아웃")
+    void t4() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(delete("/api/v1/members/logout"))
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."))
+                .andExpect(result -> {
+                    Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
+                    assertThat(apiKeyCookie.getValue()).isEmpty();
+                    assertThat(apiKeyCookie.getMaxAge()).isEqualTo(0);
+                    assertThat(apiKeyCookie.getPath()).isEqualTo("/");
+                    assertThat(apiKeyCookie.isHttpOnly()).isTrue();
+                });
+    }
+
+    @Test
+    @DisplayName("내 정보")
+    void t5() throws Exception {
+        Member actor = memberRepository.findByUsername("user1").get();
+        String actorApiKey = actor.getApiKey();
+
+        ResultActions resultActions = mvc
+                .perform(get("/api/v1/members/me")
+                                .header("Authorization",
+                                        "Bearer " + actorApiKey))
+                .andDo(print());
+
+        Member member = memberRepository.findByUsername("user1").get();
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1MemberController.class))
+                .andExpect(handler().methodName("me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("OK"))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
+                .andExpect(jsonPath("$.data.memberDto.createDate").value(member.getCreateDate().toString()))
+                .andExpect(jsonPath("$.data.memberDto.modifyDate").value(member.getModifyDate().toString()))
+                .andExpect(jsonPath("$.data.memberDto.name").value(member.getNickname()));
+    }
 }
