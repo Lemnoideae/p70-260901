@@ -52,7 +52,7 @@ public class ApiV1MemberController {
         }
         String accessToken = memberService.genAccessToken(actor);
 //        rq.addCookie("apiKey", actor.getApiKey()); // 나중에 또 사용할 예정.
-        rq.addCookie("accessToken", accessToken);
+        rq.setCookie("accessToken", accessToken);
 
         return new RsData("200-1",
                 "%s님 환영합니다.".formatted(actor.getNickname()),

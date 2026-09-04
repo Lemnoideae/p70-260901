@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+
 @Component
 @RequestScope
 @RequiredArgsConstructor
@@ -20,53 +24,85 @@ public class Rq {
     private final HttpServletResponse response;
 
     public Member getActor() {
-        String authorization = request.getHeader("Authorization");
-        String apiKey = null;
+        String authorization = this.getHeader("Authorization", "");
+        String apiKey;
+        String accessToken;
 
-        if (authorization != null && !authorization.isBlank()) {
+        if (!authorization.isBlank()) {
 
             if (!authorization.startsWith("Bearer ")) {
                 throw new ServiceException("401-2",
                         "헤더의 인증 정보 형식이 올바르지 않습니다.");
             }
-            apiKey = authorization.replace("Bearer ", "");
+            String[] parts = authorization.split(" ");
+            apiKey = parts[1];
+            accessToken = parts.length == 3 ? parts[2] : "";
 
         } else {
+            apiKey = getCookieValue("apiKey", "");
+            accessToken = getCookieValue("accessToken", "");
+        }
 
-            Cookie[] cookies = request.getCookies();
+        if (apiKey.isBlank())
+            throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+        Member member = null;
 
-            if(cookies == null) {
-                throw new ServiceException("401-1", "인증 정보가 없습니다.");
-            }
+        if (!accessToken.isBlank()) {
+            Map<String, Object> payload = memberService.payloadOrNull(accessToken);
 
-            for(Cookie cookie : cookies) {
-                if(cookie.getName().equals("apiKey")) {
-                    apiKey = cookie.getValue();
-                    break;
-                }
+            if (payload != null) {
+                int id = (int) payload.get("id");
+                member = memberService.findById(id)
+                        .orElseThrow(() -> new ServiceException(
+                                "401-4",
+                                "accessToken의 id에 해당하는 회원이 존재하지 않습니다."));
             }
         }
 
-        return memberService.findByApiKey(apiKey).orElseThrow(() ->
-                new ServiceException("401-3", "API 키가 올바르지 않습니다."));
+        if (member == null) {
+            member = memberService
+                    .findByApiKey(apiKey)
+                    .orElseThrow(() -> new ServiceException(
+                            "401-3", "API 키가 유효하지 않습니다."));
+        }
+
+        return member;
     }
 
-    public void addCookie(String name, String value) {
+    public void setCookie(String name, String value) {
         Cookie cookie = new Cookie(name, value);
-        cookie.setDomain("localhost");
         cookie.setPath("/");
         cookie.setHttpOnly(true);
+
+        if (value.isBlank()) {
+            cookie.setMaxAge(0);
+        }
 
         response.addCookie(cookie);
     }
 
     public void deleteCookie(String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setHttpOnly(true);
-        cookie.setDomain("localhost");
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
+        setCookie(name, null);
+    }
 
-        response.addCookie(cookie);
+    private String getCookieValue(String name, String defaultValue) {
+        return Optional
+                .ofNullable(request.getCookies())
+                .flatMap(
+                        cookies ->
+                                Arrays.stream(cookies)
+                                        .filter(cookie -> cookie.getName().equals(name))
+                                        .map(Cookie::getValue)
+                                        .filter(value -> !value.isBlank())
+                                        .findFirst()
+                )
+                .orElse(defaultValue);
+    }
+
+    private String getHeader(String name, String defaultValue) {
+        return Optional
+                .ofNullable(request.getHeader(name))
+                .filter(headerValue -> !headerValue.isBlank())
+                .orElse(defaultValue);
     }
 }
