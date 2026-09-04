@@ -5,13 +5,15 @@ import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
 
 public class MyUtility {
     public static class jwt {
-        public static String toString(String secret, long expireSeconds, Map<String, Object> body) {
+        public static String toString(String secret, long expireMillis, Map<String, Object> body) {
             ClaimsBuilder claimsBuilder = Jwts.claims();
 
             for (Map.Entry<String, Object> entry : body.entrySet()) {
@@ -21,7 +23,7 @@ public class MyUtility {
             Claims claims = claimsBuilder.build();
 
             Date issuedAt = new Date();
-            Date expiration = new Date(issuedAt.getTime() + 1000L * expireSeconds);
+            Date expiration = new Date(issuedAt.getTime() + expireMillis);
 
             Key secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 
@@ -33,6 +35,24 @@ public class MyUtility {
                     .compact();
 
             return jwt;
+        }
+
+        public static boolean isValid(String jwt, String secretPattern) {
+
+            SecretKey secretKey = Keys.hmacShaKeyFor(secretPattern.getBytes(StandardCharsets.UTF_8));
+
+            try {
+                Jwts
+                        .parser()
+                        .verifyWith(secretKey)
+                        .build()
+                        .parse(jwt);
+
+            } catch (Exception e) {
+                return false;
+            }
+
+            return true;
         }
     }
 }
