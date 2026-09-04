@@ -60,15 +60,10 @@ public class AuthTokenServiceTest {
 
         assertThat(jwt).isNotBlank();
 
-        Map<String, Object> parsedPayload = (Map<String, Object>) Jwts
-                .parser()
-                .verifyWith(secretKey)
-                .build()
-                .parse(jwt)
-                .getPayload();
+        Map<String, Object> parsedPayload =
+                MyUtility.jwt.payload(jwt, secretPattern);
 
-        assertThat(parsedPayload)
-                .containsAllEntriesOf(payload);
+        assertThat(parsedPayload).containsAllEntriesOf(payload);
 
         boolean validResult = MyUtility.jwt.isValid(jwt, secretPattern);
         assertThat(validResult).isTrue();
@@ -79,16 +74,24 @@ public class AuthTokenServiceTest {
     @Test
     @DisplayName("MyUtility.jwt.toString 를 통해서 JWT 생성, {name=\"Paul\", age=23}")
     void t3() {
+        Map<String, Object> payload =
+                Map.of("name", "Paul", "age", 23);
+
         String jwt = MyUtility.jwt.toString(
                 secretPattern,
                 expireMillis,
-                Map.of("name", "Paul", "age", 23)
+                payload
         );
 
         assertThat(jwt).isNotBlank();
 
         boolean validResult = MyUtility.jwt.isValid(jwt, secretPattern);
         assertThat(validResult).isTrue();
+
+        Map<String, Object> parsedPayload =
+                MyUtility.jwt.payload(jwt, secretPattern);
+
+        assertThat(parsedPayload).containsAllEntriesOf(payload);
 
         System.out.println("jwt = " + jwt);
     }
