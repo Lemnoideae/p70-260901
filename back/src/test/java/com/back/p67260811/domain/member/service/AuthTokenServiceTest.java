@@ -61,7 +61,7 @@ public class AuthTokenServiceTest {
         assertThat(jwt).isNotBlank();
 
         Map<String, Object> parsedPayload =
-                MyUtility.jwt.payload(jwt, secretPattern);
+                MyUtility.jwt.payloadOrNull(jwt, secretPattern);
 
         assertThat(parsedPayload).containsAllEntriesOf(payload);
 
@@ -89,7 +89,7 @@ public class AuthTokenServiceTest {
         assertThat(validResult).isTrue();
 
         Map<String, Object> parsedPayload =
-                MyUtility.jwt.payload(jwt, secretPattern);
+                MyUtility.jwt.payloadOrNull(jwt, secretPattern);
 
         assertThat(parsedPayload).containsAllEntriesOf(payload);
 
@@ -104,7 +104,15 @@ public class AuthTokenServiceTest {
         String accessToken = authTokenService.genAccessToken(member1);
         assertThat(accessToken).isNotBlank();
 
-        System.out.println("accessToken = " + accessToken);
+        Map<String, Object> payload = authTokenService.payloadOrNull(accessToken);
 
+        assertThat(payload).containsAllEntriesOf(
+                Map.of(
+                        "id", member1.getId(),
+                        "username", member1.getUsername()
+                )
+        );
+
+        System.out.println("accessToken = " + accessToken);
     }
 }
