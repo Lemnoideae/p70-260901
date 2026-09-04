@@ -2,3 +2,4 @@
 .idea
 .vscode/
 db_dev.mv.db
+/back/src/main/resources/application-secret.yml

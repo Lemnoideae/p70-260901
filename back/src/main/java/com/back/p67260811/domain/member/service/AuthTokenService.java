@@ -15,16 +15,16 @@ public class AuthTokenService {
     @Value("${custom.jwt.expireSeconds}")
     private long expireMillis;
 
-    public String genAccessToken(Member member) {
+    String genAccessToken(Member member) {
 
         return MyUtility.jwt.toString(
-                secretPattern,
-                expireMillis,
+                this.secretPattern,
+                this.expireMillis,
                 Map.of("id", member.getId(), "username", member.getUsername())
         );
     }
 
-    public Map<String, Object> payloadOrNull(String jwt) {
+    Map<String, Object> payloadOrNull(String jwt) {
         Map<String, Object> payload =
                 MyUtility.jwt.payloadOrNull(jwt, secretPattern);
 

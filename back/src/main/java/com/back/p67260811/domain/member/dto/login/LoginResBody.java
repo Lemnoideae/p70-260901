@@ -4,6 +4,7 @@ import com.back.p67260811.domain.member.dto.MemberDto;
 
 public record LoginResBody(
         MemberDto memberDto,
-        String apiKey
+        String apiKey,
+        String accessToken
 ) {
 }

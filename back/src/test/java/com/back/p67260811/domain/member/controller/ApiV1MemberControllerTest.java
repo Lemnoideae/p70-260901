@@ -63,7 +63,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.id").value(6))
                 .andExpect(jsonPath("$.data.memberDto.createDate").exists())
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").exists())
-                .andExpect(jsonPath("$.data.memberDto.name").value(nickname));
+                .andExpect(jsonPath("$.data.memberDto.nickname").value(nickname));
     }
 
     @Test
@@ -126,23 +126,19 @@ public class ApiV1MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted(member.getNickname())))
-                .andExpect(jsonPath("$.data.apiKey").exists());
-//                .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
-//                .andExpect(jsonPath("$.data.memberDto.createDate").value(member.getCreateDate()))
-//                .andExpect(jsonPath("$.data.memberDto.modifyDate").value(member.getModifyDate()))
-//                .andExpect(jsonPath("$.data.memberDto.nickname").value(member.getName()));
+                .andExpect(jsonPath("$.data.apiKey").exists())
+                .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
+        ;
 
         resultActions.andExpect(
                 result -> {
-                    Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
-                    assertThat(apiKeyCookie).isNotNull();
-                    if(apiKeyCookie != null) {
-                        assertThat(apiKeyCookie.getValue()).isNotBlank();
-                    }
+                    Cookie accessTokenCookie = result.getResponse().getCookie("accessToken");
+                    assertThat(accessTokenCookie).isNotNull();
 
-                    assertThat(apiKeyCookie.getPath()).isEqualTo("/");
-                    assertThat(apiKeyCookie.getDomain()).isEqualTo("localhost");
-                    assertThat(apiKeyCookie.isHttpOnly()).isEqualTo(true);
+                    assertThat(accessTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(accessTokenCookie.getDomain()).isEqualTo("localhost");
+                    assertThat(accessTokenCookie.isHttpOnly()).isEqualTo(true);
                 }
         );
     }
@@ -171,7 +167,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.memberDto.createDate").value(member.getCreateDate().toString()))
                 .andExpect(jsonPath("$.data.memberDto.modifyDate").value(member.getModifyDate().toString()))
-                .andExpect(jsonPath("$.data.memberDto.name").value(member.getNickname()));
+                .andExpect(jsonPath("$.data.memberDto.nickname").value(member.getNickname()));
     }
 
     @Test
