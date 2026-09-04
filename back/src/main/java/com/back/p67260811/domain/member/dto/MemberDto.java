@@ -10,14 +10,14 @@ public record MemberDto(
         int id,
         LocalDateTime createDate,
         LocalDateTime modifyDate,
-        String name
+        String nickname
 ) {
     public static MemberDto from(Member member) {
         return MemberDto.builder()
                 .id(member.getId())
                 .createDate(member.getCreateDate())
                 .modifyDate(member.getModifyDate())
-                .name(member.getNickname())
+                .nickname(member.getNickname())
                 .build();
     }
 }

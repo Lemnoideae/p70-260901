@@ -22,7 +22,7 @@ public class Member extends BaseEntity {
     private String nickname;
 
     @Column(unique = true)
-    private String apiKey;
+    private String apiKey; // 나중에 활용할 수 있음. 그런데 어디에?
 
     public Member(String username, String password, String nickname) {
         this(username, password, nickname, UUID.randomUUID().toString());

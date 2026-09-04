@@ -23,7 +23,7 @@ public class Rq {
         String authorization = request.getHeader("Authorization");
         String apiKey = null;
 
-        if (authorization != null || !authorization.isBlank()) {
+        if (authorization != null && !authorization.isBlank()) {
 
             if (!authorization.startsWith("Bearer ")) {
                 throw new ServiceException("401-2",

@@ -130,7 +130,7 @@ public class ApiV1MemberControllerTest {
 //                .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
 //                .andExpect(jsonPath("$.data.memberDto.createDate").value(member.getCreateDate()))
 //                .andExpect(jsonPath("$.data.memberDto.modifyDate").value(member.getModifyDate()))
-//                .andExpect(jsonPath("$.data.memberDto.name").value(member.getName()));
+//                .andExpect(jsonPath("$.data.memberDto.nickname").value(member.getName()));
 
         resultActions.andExpect(
                 result -> {
