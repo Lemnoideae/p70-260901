@@ -147,7 +147,7 @@ public class ApiV1MemberControllerTest {
     @DisplayName("내 정보")
     void t4() throws Exception {
         Member actor = memberRepository.findByUsername("user1").get();
-        String actorApiKey = actor.getApiKey();
+        String actorApiKey = actor.getRefreshToken();
 
         ResultActions resultActions = mvc
                 .perform(get("/api/v1/members/me")

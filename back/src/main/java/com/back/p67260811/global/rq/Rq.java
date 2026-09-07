@@ -25,8 +25,8 @@ public class Rq {
 
     public Member getActor() {
         String authorization = this.getHeader("Authorization", "");
-        String apiKey;
         String accessToken;
+        String refreshToken;
 
         if (!authorization.isBlank()) {
 
@@ -34,16 +34,16 @@ public class Rq {
                 throw new ServiceException("401-2",
                         "헤더의 인증 정보 형식이 올바르지 않습니다.");
             }
-            String[] parts = authorization.split(" ");
-            apiKey = parts[1];
+            String[] parts = authorization.split(" ", 3);
+            refreshToken = parts[1];
             accessToken = parts.length == 3 ? parts[2] : "";
 
         } else {
-            apiKey = getCookieValue("apiKey", "");
+            refreshToken = getCookieValue("refreshToken", "");
             accessToken = getCookieValue("accessToken", "");
         }
 
-        if (apiKey.isBlank())
+        if (refreshToken.isBlank())
             throw new ServiceException("401-1", "로그인 후 이용해주세요.");
         Member member = null;
 
@@ -52,18 +52,16 @@ public class Rq {
 
             if (payload != null) {
                 int id = (int) payload.get("id");
-                member = memberService.findById(id)
-                        .orElseThrow(() -> new ServiceException(
-                                "401-4",
-                                "accessToken의 id에 해당하는 회원이 존재하지 않습니다."));
+                String username = (String) payload.get("username");
+                member = new Member(id, username);
             }
         }
 
         if (member == null) {
             member = memberService
-                    .findByApiKey(apiKey)
+                    .findByRefreshToken(refreshToken)
                     .orElseThrow(() -> new ServiceException(
-                            "401-3", "API 키가 유효하지 않습니다."));
+                            "401-3", "Refresh Token이 유효하지 않습니다."));
         }
 
         return member;

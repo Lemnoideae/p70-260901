@@ -56,7 +56,7 @@ public class ApiV1MemberController {
 
         return new RsData("200-1",
                 "%s님 환영합니다.".formatted(actor.getNickname()),
-                new LoginResBody(MemberDto.from(actor), actor.getApiKey(), accessToken));
+                new LoginResBody(MemberDto.from(actor), actor.getRefreshToken(), accessToken));
     }
 
     @GetMapping("/me")

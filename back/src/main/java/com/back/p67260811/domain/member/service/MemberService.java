@@ -36,8 +36,8 @@ public class MemberService {
         return memberRepository.findByUsername(user);
     }
 
-    public Optional<Member> findByApiKey(String apiKey) {
-        return memberRepository.findByApiKey(apiKey);
+    public Optional<Member> findByRefreshToken(String refreshToken) {
+        return memberRepository.findByRefreshToken(refreshToken);
     }
 
     public String genAccessToken(Member member) {
