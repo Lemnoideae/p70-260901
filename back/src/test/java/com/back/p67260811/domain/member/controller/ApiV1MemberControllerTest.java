@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -118,7 +120,7 @@ public class ApiV1MemberControllerTest {
                 )
                 .andDo(print());
 
-        Member member = memberRepository.findByUsername(username).get();
+        Member member = memberRepository.findByUsername(username).orElseThrow();
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
@@ -147,13 +149,15 @@ public class ApiV1MemberControllerTest {
     @Test
     @DisplayName("내 정보, 올바른 Refresh Token, 유효하지 않은 accessToken")
     void t4() throws Exception {
-        Member actor = memberRepository.findByUsername("user1").get();
+        Member actor = memberRepository.findByUsername("user1").orElseThrow();
         String actorRefreshToken = actor.getRefreshToken();
 
-        ResultActions resultActions = mvc
-                .perform(
-                        get("/api/v1/members/me")
-                                .cookie(new Cookie("refreshToken", actorRefreshToken), new Cookie("accessToken", "wrong-access-token"))
+        ResultActions resultActions = mvc.perform(get("/api/v1/members/me")
+                        .cookie(
+                                new Cookie(
+                                        "refreshToken", actorRefreshToken),
+                                new Cookie(
+                                        "accessToken", "wrong-access-token"))
                 )
                 .andDo(print());
 
@@ -178,7 +182,8 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."))
                 .andExpect(result -> {
                     Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
-                    assertThat(refreshTokenCookie.getValue()).isEmpty();
+                    assertThat(Objects.requireNonNull(refreshTokenCookie).getValue())
+                            .isEmpty();
                     assertThat(refreshTokenCookie.getMaxAge()).isEqualTo(0);
                     assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
                     assertThat(refreshTokenCookie.isHttpOnly()).isTrue();

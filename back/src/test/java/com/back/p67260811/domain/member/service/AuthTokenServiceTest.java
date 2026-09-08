@@ -42,7 +42,7 @@ public class AuthTokenServiceTest {
     }
 
     @Test
-    @DisplayName("jjwt 최신 방식으로 JWT 생성, {name=\"Paul\", age=23}")
+    @DisplayName("최신 방식으로 JWT 생성, {name=\"Paul\", age=23}")
     void t2() {
         // 토큰 만료기간: 10분
         SecretKey secretKey =
