@@ -72,7 +72,7 @@ public class ApiV1PostController {
     @DeleteMapping("/{id}")
     public RsData<Void> delete(@PathVariable int id) {
         Member actor = rq.getActor();
-        postService.findById(id).orElseThrow().checkActorModify(actor);
+        postService.findById(id).orElseThrow().checkActorDelete(actor);
         postService.delete(id);
 
         return new RsData<>(

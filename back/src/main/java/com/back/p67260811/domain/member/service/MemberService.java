@@ -6,6 +6,7 @@ import com.back.p67260811.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,10 +27,14 @@ public class MemberService {
         return memberRepository.save(new Member(username, password, nickname));
     }
 
-    public Member join(String username, String password, String nickname, String apiKey) {
+    public Member join(String username, String password, String nickname, String refreshToken) {
         findByUsername(username).ifPresent(_ -> {
             throw new ServiceException("409-1", "이미 사용 중인 아이디입니다.");});
-        return memberRepository.save(new Member(username, password, nickname, apiKey));
+        return memberRepository.save(new Member(username, password, nickname, refreshToken));
+    }
+
+    public List<Member> findAll() {
+        return memberRepository.findAll();
     }
 
     public Optional<Member> findByUsername(String user) {

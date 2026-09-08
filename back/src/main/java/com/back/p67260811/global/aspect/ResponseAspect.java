@@ -29,6 +29,8 @@ public class ResponseAspect {
                     ||
                     @annotation(org.springframework.web.bind.annotation.PutMapping)
                     ||
+                    @annotation(org.springframework.web.bind.annotation.PatchMapping)
+                    ||
                     @annotation(org.springframework.web.bind.annotation.DeleteMapping)
                 )
             )

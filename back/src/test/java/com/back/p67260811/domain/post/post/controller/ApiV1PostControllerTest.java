@@ -40,11 +40,11 @@ public class ApiV1PostControllerTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Value("${jwt.secretPattern}")
+    @Value("${custom.jwt.secretPattern}")
     private String secretPattern;
 
-    @Value("${jwt.expireSeconds}")
-    private long expireSeconds;
+    @Value("${custom.jwt.expireMillis}")
+    private long expireMillis;
 
     @Test
     @DisplayName("글 다건 조회")
@@ -307,7 +307,7 @@ public class ApiV1PostControllerTest {
 
         String accessToken = MyUtility.jwt.toString(
                 secretPattern,
-                expireSeconds,
+                expireMillis,
                 Map.of(
                         "id", author.getId(),
                         "username", author.getUsername(),

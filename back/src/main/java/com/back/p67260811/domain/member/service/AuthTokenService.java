@@ -12,7 +12,7 @@ public class AuthTokenService {
 
     @Value("${custom.jwt.secretPattern}")
     private String secretPattern;
-    @Value("${custom.jwt.expireSeconds}")
+    @Value("${custom.jwt.expireMillis}")
     private long expireMillis;
 
     String genAccessToken(Member member) {

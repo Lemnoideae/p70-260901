@@ -4,6 +4,8 @@ spring:
   profiles:
     active: dev
     include: secret
+  config:
+    import: application-secret.yml
 
   output:
     ansi:

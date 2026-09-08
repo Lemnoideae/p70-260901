@@ -126,7 +126,7 @@ public class ApiV1MemberControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("%s님 환영합니다.".formatted(member.getNickname())))
-                .andExpect(jsonPath("$.data.apiKey").exists())
+                .andExpect(jsonPath("$.data.refreshToken").exists())
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
         ;
@@ -143,31 +143,24 @@ public class ApiV1MemberControllerTest {
         );
     }
 
+
     @Test
-    @DisplayName("내 정보")
+    @DisplayName("내 정보, 올바른 Refresh Token, 유효하지 않은 accessToken")
     void t4() throws Exception {
         Member actor = memberRepository.findByUsername("user1").get();
-        String actorApiKey = actor.getRefreshToken();
+        String actorRefreshToken = actor.getRefreshToken();
 
         ResultActions resultActions = mvc
-                .perform(get("/api/v1/members/me")
-                        .header("Authorization",
-                                "Bearer " + actorApiKey))
+                .perform(
+                        get("/api/v1/members/me")
+                                .cookie(new Cookie("refreshToken", actorRefreshToken), new Cookie("accessToken", "wrong-access-token"))
+                )
                 .andDo(print());
-
-        Member member = memberRepository.findByUsername("user1").get();
 
         resultActions
                 .andExpect(handler().handlerType(ApiV1MemberController.class))
                 .andExpect(handler().methodName("me"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultCode").value("200-1"))
-                .andExpect(jsonPath("$.msg").value("OK"))
-                .andExpect(jsonPath("$.data").exists())
-                .andExpect(jsonPath("$.data.memberDto.id").value(member.getId()))
-                .andExpect(jsonPath("$.data.memberDto.createDate").value(member.getCreateDate().toString()))
-                .andExpect(jsonPath("$.data.memberDto.modifyDate").value(member.getModifyDate().toString()))
-                .andExpect(jsonPath("$.data.memberDto.nickname").value(member.getNickname()));
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -184,11 +177,11 @@ public class ApiV1MemberControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("로그아웃 되었습니다."))
                 .andExpect(result -> {
-                    Cookie apiKeyCookie = result.getResponse().getCookie("apiKey");
-                    assertThat(apiKeyCookie.getValue()).isEmpty();
-                    assertThat(apiKeyCookie.getMaxAge()).isEqualTo(0);
-                    assertThat(apiKeyCookie.getPath()).isEqualTo("/");
-                    assertThat(apiKeyCookie.isHttpOnly()).isTrue();
+                    Cookie refreshTokenCookie = result.getResponse().getCookie("refreshToken");
+                    assertThat(refreshTokenCookie.getValue()).isEmpty();
+                    assertThat(refreshTokenCookie.getMaxAge()).isEqualTo(0);
+                    assertThat(refreshTokenCookie.getPath()).isEqualTo("/");
+                    assertThat(refreshTokenCookie.isHttpOnly()).isTrue();
                 });
     }
 

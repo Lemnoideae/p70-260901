@@ -51,24 +51,26 @@ public class ApiV1MemberController {
             throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
         }
         String accessToken = memberService.genAccessToken(actor);
-//        rq.addCookie("apiKey", actor.getApiKey()); // 나중에 또 사용할 예정.
-        rq.setCookie("accessToken", accessToken);
+        rq.addCookie("refreshToken", actor.getRefreshToken());
+        rq.addCookie("accessToken", accessToken);
 
         return new RsData("200-1",
                 "%s님 환영합니다.".formatted(actor.getNickname()),
-                new LoginResBody(MemberDto.from(actor), actor.getRefreshToken(), accessToken));
+                new LoginResBody(MemberDto.from(actor), accessToken, actor.getRefreshToken()));
     }
 
     @GetMapping("/me")
     public RsData<MemberDto> me() {
         Member actor = rq.getActor();
+        Member realActor = memberService.findById(actor.getId()).orElseThrow();
         return new RsData("200-1", "OK",
-                new MeResBody(MemberDto.from(actor)));
+                new MeResBody(MemberDto.from(realActor)));
     }
 
     @DeleteMapping("/logout")
     public RsData<Void> logout() {
-        rq.deleteCookie("apiKey");
+        rq.deleteCookie("refreshToken");
+        rq.deleteCookie("accessToken");
         return new RsData<>("200-1", "로그아웃 되었습니다.");
     }
 }
