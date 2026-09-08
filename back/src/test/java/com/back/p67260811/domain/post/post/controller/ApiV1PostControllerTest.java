@@ -81,13 +81,13 @@ public class ApiV1PostControllerTest {
     void t2() throws Exception {
         String title = "제목입니다";
         String content = "내용입니다";
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                                 .content("""
                                         {
                                             "title": "%s",
@@ -120,13 +120,13 @@ public class ApiV1PostControllerTest {
         int targetId = 1;
         String title = "제목 수정";
         String content = "내용 수정";
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         patch("/api/v1/posts/%d".formatted(targetId))
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                                 .content("""
                                         {
                                             "title": "%s",
@@ -184,12 +184,12 @@ public class ApiV1PostControllerTest {
     @DisplayName("글 삭제")
     void t5() throws Exception {
         int targetId = 1;
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         delete("/api/v1/posts/%d".formatted(targetId))
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                 )
                 .andDo(print());
 
@@ -211,13 +211,13 @@ public class ApiV1PostControllerTest {
     void t6() throws Exception {
         String title = "";
         String content = "내용입니다";
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                                 .content("""
                                         {
                                             "title": "%s",
@@ -244,13 +244,13 @@ public class ApiV1PostControllerTest {
     void t7() throws Exception {
         String title = "제목입니다.";
         String content = "";
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                                 .content("""
                                         {
                                             "title": "%s",
@@ -273,13 +273,13 @@ public class ApiV1PostControllerTest {
     void t8() throws Exception {
         String title = "제목입니다.";
         String content = "내용입니다";
-        String apiKey = "user1";
+        String refreshToken = "user1";
 
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", "Bearer " + apiKey)
+                                .header("Authorization", "Bearer " + refreshToken)
                                 .content("""
                                         {
                                             "title": "%s"
@@ -299,7 +299,7 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성, 유효한 엑세스 토큰, 잘못된 apiKey")
+    @DisplayName("글 작성, 유효한 엑세스 토큰, 잘못된 refreshToken")
     void t9() throws Exception {
         String title = "제목입니다";
         String content = "내용입니다";
